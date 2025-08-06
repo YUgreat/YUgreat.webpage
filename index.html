@@ -1,11 +1,639 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="utf-8" />
-		<title>包好的创意小站</title>
-	</head>
-	<body>
-		<p>欢迎来到我的站点</p>
-	</body>
-</html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YU的编程小站</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
 
+        :root {
+            --primary: #0ff;
+            --secondary: #f0f;
+            --accent: #ff0;
+            --dark: #0a0a1a;
+            --darker: #050510;
+            --card-bg: rgba(20, 25, 40, 0.7);
+            --text: #e0e0ff;
+            --text-secondary: #a0a0ff;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        /* 弹幕容器 */
+        #barrage-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .barrage {
+            position: absolute;
+            font-size: 16px;
+            color: rgba(0, 255, 255, 0.7);
+            text-shadow: 0 0 5px var(--primary);
+            white-space: nowrap;
+            animation: fall linear forwards;
+            user-select: none;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+
+        /* 头部样式 */
+        header {
+            text-align: center;
+            padding: 6rem 2rem 4rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .title {
+            font-size: 4.5rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: inline-block;
+            font-weight: 800;
+        }
+
+        .title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 10%;
+            width: 80%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            max-width: 700px;
+            margin: 0 auto;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* 导航 */
+        nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            padding: 1.8rem 0;
+            background: rgba(10, 15, 30, 0.85);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .nav-link {
+            color: var(--text);
+            text-decoration: none;
+            padding: 0.8rem 2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            font-size: 1.1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(0, 255, 255, 0.15);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .nav-link:hover::before {
+            left: 100%;
+        }
+
+        /* 主内容区 */
+        main {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 4rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            transition: transform 0.4s ease, border-color 0.4s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-8px);
+            border-color: rgba(0, 255, 255, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 255, 255, 0.2);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), transparent);
+            border-radius: 3px;
+        }
+
+        .section-title i {
+            font-size: 2rem;
+            color: var(--accent);
+        }
+
+        .content {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            margin-bottom: 1.8rem;
+            color: #d0d0ff;
+        }
+
+        .highlight {
+            color: var(--primary);
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+        }
+
+        /* 项目网格 - 带图片 */
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 3rem;
+            margin-top: 2.5rem;
+        }
+
+        .project-card {
+            background: rgba(30, 35, 50, 0.7);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 255, 255, 0.15);
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 255, 255, 0.25);
+            border-color: var(--primary);
+        }
+
+        .project-img {
+            height: 220px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .project-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .project-card:hover .project-img img {
+            transform: scale(1.05);
+        }
+
+        .project-content {
+            padding: 1.8rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .project-title {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .project-desc {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            flex: 1;
+        }
+
+        .project-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            margin-top: auto;
+        }
+
+        .tech-tag {
+            background: rgba(0, 255, 255, 0.1);
+            color: var(--primary);
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        /* 页脚 */
+        footer {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(10, 15, 30, 0.9);
+            margin-top: 3rem;
+            border-top: 1px solid rgba(0, 255, 255, 0.3);
+            position: relative;
+            z-index: 10;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(0, 255, 255, 0.1);
+            color: var(--primary);
+            font-size: 1.8rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        .social-link:hover {
+            background: var(--primary);
+            color: var(--darker);
+            transform: translateY(-8px);
+            box-shadow: 0 0 25px var(--primary);
+            border-color: var(--accent);
+        }
+
+        .social-link::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.4) 0%, transparent 80%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .social-link:hover::after {
+            opacity: 1;
+        }
+
+        .copyright {
+            color: #7070aa;
+            margin-top: 2rem;
+            font-size: 1rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .project-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 3.5rem;
+            }
+            
+            .section {
+                padding: 2.2rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .project-img {
+                height: 200px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .title {
+                font-size: 2.8rem;
+            }
+            
+            .nav-link {
+                padding: 0.7rem 1.5rem;
+                font-size: 1rem;
+            }
+            
+            header {
+                padding: 4rem 1.5rem 3rem;
+            }
+            
+            .section {
+                padding: 1.8rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 弹幕容器 -->
+    <div id="barrage-container"></div>
+
+    <!-- 页面头部 -->
+    <header>
+        <h1 class="title">YU的编程小站</h1>
+        <p class="subtitle">探索代码世界，分享技术心得，记录编程旅程中的每一个精彩瞬间</p>
+    </header>
+
+    <!-- 导航栏 -->
+    <nav>
+        <a href="#about" class="nav-link active">我是谁</a>
+        <a href="#location" class="nav-link">我在哪里</a>
+        <a href="#projects" class="nav-link">我的项目</a>
+        <a href="#experience" class="nav-link">我的心得</a>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main>
+        <!-- 我是谁 -->
+        <section id="about" class="section">
+            <h2 class="section-title"><i class="fas fa-user-astronaut"></i> 我</h2>
+            <p class="content">大家好，我是<span class="highlight">YU</span>，一名充满热情的初三学生，兼职学校IT（我比较专业（没专业的人专业，也能应付一些场景））。</p>
+            <p class="content">拥有大约8年的编程经验，熟练掌握<span class="highlight">C++</span>、<span class="highlight">Python</span>和<span class="highlight">Dos/Basic</span>等语言。我相信技术应该服务于人，所以注重代码运行的流畅性和最小复杂度。</p>
+            <p class="content">在学习之余，我在B站和CSDN寻找大佬的编程思路和历年真题，知道一些知识。</p>
+        </section>
+
+        <!-- 我在哪里 -->
+        <section id="location" class="section">
+            <h2 class="section-title"><i class="fas fa-map-marker-alt"></i> 社交媒体</h2>
+            <p class="content">目前，我主要活跃在<span class="highlight">BiliBili</span>，这个充满了现代化和神秘的网站给了我很大收获。</p>
+            <p class="content">我能认识到很多编程大佬和比较厉害的白帽子和黑帽子，并从他们的故事中学习成长。</p>
+            <p class="content">在数字世界中，你可以在这些平台找到我：<span class="highlight">GitHub</span>、<span class="highlight">BiliBili</span>、<span class="highlight">快手</span>。我始终保持开放的合作态度，欢迎技术交流与项目合作（假）。</p>
+        </section>
+
+        <!-- 我的项目 - 带图片展示 -->
+        <section id="projects" class="section">
+            <h2 class="section-title"><i class="fas fa-code-branch"></i> 项目</h2>
+            <p class="content">以下是我近期参与的一些项目：</p>
+            
+            <div class="project-grid">
+                <!-- 项目1 -->
+                <div class="project-card">
+                    <div class="project-img">
+                        <!-- 本地图片引用位置（替换为您的实际路径） -->
+                        <img src="C:/Users/Administrator/Desktop/YUgreat's%20webpage/%E4%BD%BF%E5%8A%B2%E4%BA%A4%E6%8D%A2%E7%AB%AF%E6%B8%B8.jpg" alt="使劲叫唤端游预览图">
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">使劲交换端游</h3>
+                        <p class="project-desc">用Arkos的中级射击教程做的游戏（未完全完成）。</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Scratch</span>
+                            <span class="tech-tag"><a href="https://www.ccw.site/detail/673873cebec95173eca4ebdd?accessKey=7f5d60&inviteCode=PY7QgxxpaiknT1fO">点此进入</a></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 项目2 -->
+                <div class="project-card">
+                    <div class="project-img">
+                        <!-- 本地图片引用位置（替换为您的实际路径） -->
+                        <img src="C:\Users\Administrator\Desktop\YUgreat's%20webpage\塔防.jpg" alt="塔防大战预览图">
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">塔防大战</h3>
+                        <p class="project-desc">不想多说了，应付学校的编程测验。</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Scratch</span>
+                            <span class="tech-tag"><a href="https://www.ccw.site/detail/65c48203b2ce1b785ebe5d9f?accessKey=7f5d60&inviteCode=VrJep4zVNdfT6FNo">点此进入</a></span>
+                        </div>
+                    </div>
+                </div>
+        </section>
+
+        <!-- 我的心得 -->
+        <section id="experience" class="section">
+            <h2 class="section-title"><i class="fas fa-lightbulb"></i> 我的心得</h2>
+            <p class="content">在多年的编程旅程中，我积累了一些宝贵的心得：</p>
+            <p class="content"><span class="highlight">1. 保持好奇心</span> - 技术世界日新月异，持续学习是开发者最重要的品质。每周我都会预留时间探索新技术。</p>
+            <p class="content"><span class="highlight">2. 代码是给人读的</span> - 写出可读性高的代码比追求聪明但晦涩的解决方案更有价值。代码维护成本远高于开发成本。</p>
+            <p class="content"><span class="highlight">3. 拥抱开源</span> - 参与开源项目不仅提升技术能力，还能建立行业联系。回馈社区是技术成长的加速器。</p>
+            <p class="content"><span class="highlight">4. 平衡与专注</span> - 编程马拉松式的开发往往效率低下。保持工作与休息的平衡，在专注时段内高效产出。</p>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="social-links">
+            <a href="https://github.com/YUgreat" class="social-link"><i class="fab fa-github"></i></a>
+            <a href="https://space.bilibili.com/3546766418905533?spm_id_from=333.1387.0.0" class="social-link"><i class="fab fa-bilibili"></i></a>
+        </div>
+        <p class="copyright">© 2025 YU的编程小站 | 探索代码之美 | 本页面已准备好部署至GitHub</p>
+    </footer>
+
+    <script>
+        // 弹幕雨实现
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('barrage-container');
+            const barrageTexts = [
+                'Scratch','Python','C++','Java','Html',
+				'Css','Javascript','Basic','.vs','.bat',
+				'VB','VS Code','Gandi','DEV-Cpp','Redpanda',
+				'Windows','Mac','Linux','Android‌','Unix',
+				'实力','背刺','招笑','坐下','黑客之子'
+            ];
+            
+            // 创建弹幕
+            function createBarrage() {
+                const barrage = document.createElement('div');
+                barrage.className = 'barrage';
+                
+                // 随机选择文本
+                const text = barrageTexts[Math.floor(Math.random() * barrageTexts.length)];
+                barrage.textContent = text;
+                
+                // 随机位置
+                const leftPos = Math.random() * 100;
+                barrage.style.left = `${leftPos}%`;
+                
+                // 随机字体大小
+                const fontSize = 14 + Math.random() * 12;
+                barrage.style.fontSize = `${fontSize}px`;
+                
+                // 随机透明度
+                const opacity = 0.4 + Math.random() * 0.6;
+                barrage.style.opacity = opacity;
+                
+                // 随机速度（5-15秒完成动画）
+                const duration = 5 + Math.random() * 10;
+                barrage.style.animationDuration = `${duration}s`;
+                
+                // 随机颜色
+                const colors = ['#0ff', '#f0f', '#0f0', '#ff0', '#f90', '#f0f','#ff0000'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                barrage.style.color = color;
+                
+                container.appendChild(barrage);
+                
+                // 动画结束后移除元素
+                setTimeout(() => {
+                    if (barrage.parentNode) {
+                        barrage.parentNode.removeChild(barrage);
+                    }
+                }, duration * 1000);
+            }
+            
+            // 初始创建一批弹幕
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    createBarrage();
+                }, i * 300);
+            }
+            
+            // 持续创建弹幕
+            setInterval(createBarrage, 500);
+            
+            // 平滑滚动
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 120,
+                            behavior: 'smooth'
+                        });
+                        
+                        // 更新活动导航链接
+                        document.querySelectorAll('.nav-link').forEach(link => {
+                            link.classList.remove('active');
+                        });
+                        this.classList.add('active');
+                    }
+                });
+            });
+            
+            // 滚动时高亮当前部分
+            window.addEventListener('scroll', function() {
+                const sections = document.querySelectorAll('.section');
+                const navLinks = document.querySelectorAll('.nav-link');
+                
+                let currentSection = '';
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (window.scrollY >= sectionTop - 180) {
+                        currentSection = section.getAttribute('id');
+                    }
+                });
+                
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${currentSection}`) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+            
+            // 添加悬停效果到项目卡片
+            const projectCards = document.querySelectorAll('.project-card');
+            projectCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-10px)';
+                    card.style.boxShadow = '0 15px 35px rgba(0, 255, 255, 0.25)';
+                    card.style.borderColor = 'var(--primary)';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = '';
+                    card.style.boxShadow = '';
+                    card.style.borderColor = '';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
